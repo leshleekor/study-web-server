@@ -2,7 +2,7 @@
 from webapp.app import app
 
 from request_parser import RequestParser
-from cgi import run_with_cgi
+from run_cgi import run_with_cgi
 
 from socket import *
 import threading
