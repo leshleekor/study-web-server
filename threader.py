@@ -20,6 +20,7 @@ class request_thread:
 
         self.parse_request_line()
         self.parse_header()
+        print(self.header)
 
         self.read_body()
 
