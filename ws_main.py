@@ -5,7 +5,7 @@ from cgi import run_with_cgi
 
 from socket import *
 import threading
-from threader import request_thread
+from request_worker import RequestWorker
 
 def main(host="127.0.0.1", port=8080):
     socks = []
@@ -16,7 +16,7 @@ def main(host="127.0.0.1", port=8080):
         while True:
             conn, addr = s.accept()
             thread = threading.Thread(
-                target=request_thread,
+                target=RequestWorker,
                 args=(conn, addr, host, port)
             )
             thread.start()

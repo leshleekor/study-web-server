@@ -2,7 +2,7 @@ from validation_header import *
 from cgi import run_with_cgi
 from webapp.app import app
 
-class request_thread:
+class RequestWorker:
 
     # DATA
     # self.f
@@ -20,10 +20,17 @@ class request_thread:
 
         self.parse_request_line()
         self.parse_header()
-        print(self.header)
+
+        for key, value in self.header.items():
+            print(key, value)
+            response = self.validation_header(key, value)
+            if response is not True:
+                self.write_f.write(bytes('HTTP/1.1 %s\r\n' % '400', 'utf-8'))
+                self.write_f.write(bytes('400 BAD REQUEST', 'utf-8'))
+                self.write_f.flush()
+                self.conn.close()
 
         self.read_body()
-
 
 
     def parse_request_line(self):
@@ -50,11 +57,14 @@ class request_thread:
             self.header[message[0]] = message[1].rstrip('\r\n').strip()
 
 
-    def validation_header(self, message):
+    def validation_header(self, key, value):
         # RFC 2616 - 6.1. Status-Line
         return {
+            'Host': check_host,
             'Cache-Control': check_cache_control,
-        }[message[0]](message)
+            'Connection': check_connection,
+            'Content-Length': check_content_length
+        }.get(key, default)(value)
 
 
     def read_body(self):
